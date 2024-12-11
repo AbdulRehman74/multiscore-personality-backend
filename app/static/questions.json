@@ -1,0 +1,62 @@
+[
+  {
+    "id": 0,
+    "text": "I like to make decisions based on data rather than intuition.",
+    "category": "Analytical"
+  },
+  {
+    "id": 1,
+    "text": "I enjoy exploring different perspectives and considering alternative viewpoints.",
+    "category": "Conceptual"
+  },
+  {
+    "id": 2,
+    "text": "I find satisfaction in identifying patterns and trends in information.",
+    "category": "Structural"
+  },
+  {
+    "id": 3,
+    "text": "I believe that practical applications are more important than theoretical ideas.",
+    "category": "Analytical"
+  },
+  {
+    "id": 4,
+    "text": "I like to hear other people’s perspectives when I’m solving a problem.",
+    "category": "Social"
+  },
+  {
+    "id": 5,
+    "text": "I enjoy coming up with ideas that others haven’t thought of.",
+    "category": "Conceptual"
+  },
+  {
+    "id": 6,
+    "text": "I believe that a step-by-step approach is essential for solving most problems.",
+    "category": "Structural"
+  },
+  {
+    "id": 7,
+    "text": "I think a lot about how my decisions could affect the people around me.",
+    "category": "Social"
+  },
+  {
+    "id": 8,
+    "text": "I find it exciting to tackle problems that don't have straightforward answers.",
+    "category": "Conceptual"
+  },
+  {
+    "id": 9,
+    "text": "I enjoy distilling complex information to understand it better.",
+    "category": "Analytical"
+  },
+  {
+    "id": 10,
+    "text": "I like working in groups better when people share a common vision.",
+    "category": "Social"
+  },
+  {
+    "id": 11,
+    "text": "I tend to prioritize tasks based on their immediate relevance and impact.",
+    "category": "Structural"
+  }
+]
