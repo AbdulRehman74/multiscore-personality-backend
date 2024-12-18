@@ -33,4 +33,12 @@ def determine_dominant_preferences(scores: Dict[str, int]) -> List[str]:
 
     return dominant_preferences
 
-
+def determine_flag(scores: Dict[str, int]) -> str:
+    unique_scores = set(scores.values())
+    if unique_scores == {9}:
+        return "Agree"
+    elif unique_scores == {3}:
+        return "Disagree"
+    elif unique_scores == {6}:
+        return "Neutral"
+    return ""

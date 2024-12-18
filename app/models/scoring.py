@@ -14,3 +14,4 @@ class ScoringRequest(BaseModel):
 class ScoringResponse(BaseModel):
     scores: Dict[str, int]
     dominant_preferences: List[str]
+    flag:str
