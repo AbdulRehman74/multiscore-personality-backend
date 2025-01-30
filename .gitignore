@@ -50,3 +50,8 @@ coverage.*
 *.swo
 .DS_Store
 Thumbs.db
+
+#structure.txt
+
+structure.txt
+.env
