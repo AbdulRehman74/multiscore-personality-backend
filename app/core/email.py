@@ -110,7 +110,7 @@ def send_otp_email(email: str, otp: str, username: str):
     response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()
 
-def send_forgot_password_email(email: str, token: str, username: str):
+def send_reset_link_email(email: str, reset_link: str, username: str):
     """Send password reset email using SendGrid."""
     url = "https://api.sendgrid.com/v3/mail/send"
     headers = {
@@ -202,7 +202,7 @@ def send_forgot_password_email(email: str, token: str, username: str):
                             <div class="content">
                                 <p>Dear {username},</p>
                                 <p>To reset your password, click the button below:</p>
-                                <p><a href="{frontend_domain}/reset-password/{token}" class="button">Reset Password</a></p>
+                                <p><a href="{reset_link}" class="button">Reset Password</a></p>
                                 <p>If you did not request this, please ignore this email.</p>
                             </div>
                             <div class="footer">
@@ -215,6 +215,5 @@ def send_forgot_password_email(email: str, token: str, username: str):
             """
         }]
     }
-
     response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()
