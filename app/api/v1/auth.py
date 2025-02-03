@@ -1,16 +1,32 @@
 import random
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.auth import hash_password, verify_password, create_access_token
 from app.core.email import send_otp_email, send_reset_link_email
 from app.core.database import get_db
 from app.models.user import User
-from app.core.config import settings  # Import settings
+from app.core.config import settings
 from app.core.response import success_response, error_response
 from datetime import datetime, timedelta
 from app.models.basemodels import SignupRequest, VerifyOtpRequest, LoginRequest, ForgotPasswordRequest, ResetPasswordRequest
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt  # For decoding the JWT token
 
 auth_router = APIRouter()
+
+# Helper function to get current user from the token
+def get_current_user(token: str = Depends(OAuth2PasswordBearer(tokenUrl="login")), db: Session = Depends(get_db)):
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        email = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        user = db.query(User).filter(User.email == email).first()
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
 @auth_router.post("/signup")
 def signup(request: SignupRequest, db: Session = Depends(get_db)):
@@ -86,3 +102,12 @@ def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db))
     db.commit()
 
     return success_response("Password reset successfully")
+
+# New method to get user profile data
+@auth_router.get("/user-profile")
+def get_user_profile(current_user: User = Depends(get_current_user)):
+    return success_response("User profile fetched successfully", {
+        "email": current_user.email,
+        "full_name": current_user.full_name,
+        "email_verified": current_user.email_verified
+    })

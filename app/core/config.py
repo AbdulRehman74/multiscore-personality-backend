@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     FRONTEND_DOMAIN: str
+    STRIPE_SECRET_KEY: str
 
     class Config:
         env_file = ".env"
