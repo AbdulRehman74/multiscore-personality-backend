@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     FRONTEND_DOMAIN: str
     STRIPE_SECRET_KEY: str
+    STRIPE_WEBHOOK_SECRET: str
 
     class Config:
         env_file = ".env"

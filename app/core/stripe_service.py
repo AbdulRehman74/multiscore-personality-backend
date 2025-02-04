@@ -10,11 +10,10 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 # Function to create or retrieve the Stripe customer ID
 def create_stripe_customer(user, db: Session):
-    # If the user already has a Stripe customer ID, return it
     if user.stripe_customer_id:
         return user.stripe_customer_id
 
-    # Create a new customer in Stripe if they don't have one
+
     customer = stripe.Customer.create(
         email=user.email,
         name=user.full_name,
