@@ -55,18 +55,22 @@ def signup(request: SignupRequest, db: Session = Depends(get_db)):
 @auth_router.post("/send-otp")
 def send_otp(request: SendOtpRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
+
     if not user:
-        return error_response("User not found")
+        return error_response("User not registered", status_code=404)
+
     if user.email_verified:
-        return error_response("Email already verified")
-    
-    otp = str(random.randint(100000, 999999))
-    user.otp = otp
+        return error_response("Email already verified", status_code=400)
+
+    new_otp = str(random.randint(100000, 999999))
+    user.otp = new_otp
     user.otp_expiry = datetime.utcnow() + timedelta(minutes=1)
     db.commit()
-    
-    send_otp_email(request.email, otp, user.full_name)
-    return success_response("OTP sent successfully")
+
+    send_otp_email(user.email, new_otp, user.full_name)
+
+    return success_response("New OTP sent to your email.")
+
 
 @auth_router.post("/verify-otp")
 def verify_otp(request: VerifyOtpRequest, db: Session = Depends(get_db)):
