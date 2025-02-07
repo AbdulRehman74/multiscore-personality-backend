@@ -20,6 +20,7 @@ sib-api-v3-sdk = "^7.6.0"
 bcrypt = "3.2.0"
 sendgrid = "^6.11.0"
 stripe = "^11.5.0"
+psycopg2-binary = "^2.9.10"
 
 
 [tool.poetry.group.dev.dependencies]

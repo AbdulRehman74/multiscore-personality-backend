@@ -8,13 +8,12 @@ from app.models.user import User
 from app.core.config import settings
 from app.core.response import success_response, error_response
 from datetime import datetime, timedelta
-from app.models.basemodels import SignupRequest, VerifyOtpRequest, LoginRequest, ForgotPasswordRequest, ResetPasswordRequest
+from app.models.basemodels import SignupRequest, VerifyOtpRequest, LoginRequest, ForgotPasswordRequest, ResetPasswordRequest, SendOtpRequest
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt  # For decoding the JWT token
+from jose import JWTError, jwt
 
 auth_router = APIRouter()
 
-# Helper function to get current user from the token
 def get_current_user(token: str = Depends(OAuth2PasswordBearer(tokenUrl="login")), db: Session = Depends(get_db)):
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
@@ -30,12 +29,14 @@ def get_current_user(token: str = Depends(OAuth2PasswordBearer(tokenUrl="login")
 
 @auth_router.post("/signup")
 def signup(request: SignupRequest, db: Session = Depends(get_db)):
-    if db.query(User).filter(User.email == request.email).first():
-        return error_response("Email already registered")
+    existing_user = db.query(User).filter(User.email == request.email).first()
+    if existing_user:
+        if existing_user.email_verified:
+            return error_response("Email already registered")
+        return error_response("User already registered but not verified. Please verify your email or request a new OTP.")
 
     otp = str(random.randint(100000, 999999))
     hashed_password = hash_password(request.password)
-
     otp_expiry = datetime.utcnow() + timedelta(minutes=1)
 
     new_user = User(
@@ -50,6 +51,22 @@ def signup(request: SignupRequest, db: Session = Depends(get_db)):
 
     send_otp_email(request.email, otp, request.full_name)
     return success_response("User registered. Please verify your email.")
+
+@auth_router.post("/send-otp")
+def send_otp(request: SendOtpRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == request.email).first()
+    if not user:
+        return error_response("User not found")
+    if user.email_verified:
+        return error_response("Email already verified")
+    
+    otp = str(random.randint(100000, 999999))
+    user.otp = otp
+    user.otp_expiry = datetime.utcnow() + timedelta(minutes=1)
+    db.commit()
+    
+    send_otp_email(request.email, otp, user.full_name)
+    return success_response("OTP sent successfully")
 
 @auth_router.post("/verify-otp")
 def verify_otp(request: VerifyOtpRequest, db: Session = Depends(get_db)):
@@ -103,7 +120,6 @@ def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db))
 
     return success_response("Password reset successfully")
 
-# New method to get user profile data
 @auth_router.get("/user-profile")
 def get_user_profile(current_user: User = Depends(get_current_user)):
     return success_response("User profile fetched successfully", {

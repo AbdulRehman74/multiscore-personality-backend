@@ -9,13 +9,14 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     QUESTIONS_FILE: str
     SENDGRID_API_KEY: str  
-    SQLALCHEMY_DATABASE_URL: str
+    POSTGRES_DATABASE_URL: str
     SECRET_KEY: str
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     FRONTEND_DOMAIN: str
     STRIPE_SECRET_KEY: str
     STRIPE_WEBHOOK_SECRET: str
+    SENDGRID_URL: str
 
     class Config:
         env_file = ".env"

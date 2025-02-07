@@ -1,9 +1,14 @@
 import requests
 from app.core.config import settings
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+email_url = os.getenv("SENDGRID_URL")
 
 def send_otp_email(email: str, otp: str, username: str):
     """Send an OTP email using SendGrid."""
-    url = "https://api.sendgrid.com/v3/mail/send"
+    url = email_url
     headers = {
         "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
         "Content-Type": "application/json",
@@ -112,7 +117,7 @@ def send_otp_email(email: str, otp: str, username: str):
 
 def send_reset_link_email(email: str, reset_link: str, username: str):
     """Send password reset email using SendGrid."""
-    url = "https://api.sendgrid.com/v3/mail/send"
+    url = email_url
     headers = {
         "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
         "Content-Type": "application/json",

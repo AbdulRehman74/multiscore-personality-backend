@@ -19,3 +19,6 @@ class ForgotPasswordRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     email: str
     new_password: str
+
+class SendOtpRequest(BaseModel):
+    email: str
