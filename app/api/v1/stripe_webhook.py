@@ -41,13 +41,11 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         return {"status": "ignored"}
 
     if event_type == "payment_intent.succeeded":
-        user.payment_status = "successful"
         user.version = "paid" 
         db.commit()
         return {"status": "user upgraded to paid"}
 
     elif event_type == "payment_intent.payment_failed":
-        user.payment_status = "failed"
         db.commit()
         return {"status": "payment failed"}
 
