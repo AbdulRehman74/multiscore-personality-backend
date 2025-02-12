@@ -13,3 +13,5 @@ class User(Base):
     otp = Column(String)
     otp_expiry = Column(DateTime, default=datetime.utcnow)
     stripe_customer_id = Column(String, nullable=True)
+    version = Column(String, default="free")
+    personality_type = Column(String, nullable=True)

@@ -10,7 +10,6 @@ import logging
 # Load webhook secret from environment variables
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -43,13 +42,14 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 
     if event_type == "payment_intent.succeeded":
         user.payment_status = "successful"
+        user.version = "paid" 
         db.commit()
-        return {"status": "webhook handled successfully"}
-    
+        return {"status": "user upgraded to paid"}
+
     elif event_type == "payment_intent.payment_failed":
         user.payment_status = "failed"
         db.commit()
-        return {"status": "webhook failed"}
+        return {"status": "payment failed"}
 
     db.commit()
-    return {"status": "webhook not handled"}
+    return {"status": "webhook event not relevant"}
