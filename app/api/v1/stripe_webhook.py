@@ -42,7 +42,6 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 
     if event_type == "payment_intent.succeeded":
         user.version = "paid" 
-        
         db.commit()
         return {"status": "user upgraded to paid"}
 
