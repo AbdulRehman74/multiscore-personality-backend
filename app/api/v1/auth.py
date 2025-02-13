@@ -19,13 +19,13 @@ def get_current_user(token: str = Depends(OAuth2PasswordBearer(tokenUrl="login")
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         email = payload.get("sub")
         if email is None:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
+            return error_response("Invalid credentials", status_code=401)
         user = db.query(User).filter(User.email == email).first()
         if user is None:
-            raise HTTPException(status_code=404, detail="User not found")
+            return error_response("User not found", status_code=404)
         return user
     except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        return error_response("Invalid credentials", status_code=401)
 
 @auth_router.post("/signup")
 def signup(request: SignupRequest, db: Session = Depends(get_db)):
@@ -55,10 +55,8 @@ def signup(request: SignupRequest, db: Session = Depends(get_db)):
 @auth_router.post("/send-otp")
 def send_otp(request: SendOtpRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
-
     if not user:
         return error_response("User not registered", status_code=404)
-
     if user.email_verified:
         return error_response("Email already verified", status_code=400)
 
@@ -68,9 +66,7 @@ def send_otp(request: SendOtpRequest, db: Session = Depends(get_db)):
     db.commit()
 
     send_otp_email(user.email, new_otp, user.full_name)
-
     return success_response("New OTP sent to your email.")
-
 
 @auth_router.post("/verify-otp")
 def verify_otp(request: VerifyOtpRequest, db: Session = Depends(get_db)):
@@ -110,7 +106,6 @@ def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db
     reset_link = f"{settings.FRONTEND_DOMAIN}/reset-password?token={reset_token}"
 
     send_reset_link_email(user.email, reset_link, user.full_name)
-
     return success_response("Password reset link sent to your email.")
 
 @auth_router.post("/reset-password")
