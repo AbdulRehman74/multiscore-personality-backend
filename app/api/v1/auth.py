@@ -89,12 +89,20 @@ def verify_otp(request: VerifyOtpRequest, db: Session = Depends(get_db)):
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
     if not user or not verify_password(request.password, user.hashed_password):
-        return error_response("Invalid credentials", status_code=401)
+        return error_response("Invalid username or password", status_code=401)
+
     if not user.email_verified:
-        return error_response("Email not verified", status_code=403)
+        otp = str(random.randint(100000, 999999))
+        user.otp = otp
+        user.otp_expiry = datetime.utcnow() + timedelta(minutes=1)
+        db.commit()
+
+        send_otp_email(user.email, otp, user.full_name)
+        return error_response("Email not verified. A new OTP has been sent to your email.", status_code=403)
 
     access_token = create_access_token(data={"sub": user.email})
     return success_response("Login successful", {"access_token": access_token, "token_type": "bearer"})
+
 
 @auth_router.post("/forgot-password")
 def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
