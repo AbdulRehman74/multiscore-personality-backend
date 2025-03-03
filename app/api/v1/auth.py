@@ -25,7 +25,7 @@ def get_current_user(token: str = Depends(OAuth2PasswordBearer(tokenUrl="login")
             return error_response("User not found", status_code=404)
         return user
     except JWTError:
-        return error_response("Invalid credentials", status_code=401)
+        return error_response("Invalid username or password", status_code=401)
 
 @auth_router.post("/signup")
 def signup(request: SignupRequest, db: Session = Depends(get_db)):
