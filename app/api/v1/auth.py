@@ -19,7 +19,7 @@ def get_current_user(token: str = Depends(OAuth2PasswordBearer(tokenUrl="login")
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         email = payload.get("sub")
         if email is None:
-            return error_response("Invalid credentials", status_code=401)
+            return error_response("Invalid username or password", status_code=401)
         user = db.query(User).filter(User.email == email).first()
         if user is None:
             return error_response("User not found", status_code=404)
