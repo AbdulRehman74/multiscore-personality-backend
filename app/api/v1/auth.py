@@ -19,33 +19,22 @@ def get_current_user(token: str = Depends(OAuth2PasswordBearer(tokenUrl="login")
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         email = payload.get("sub")
         if email is None:
-            return error_response("Invalid username or password", status_code=401)
+            return error_response("Invalid credentials", status_code=401)
         user = db.query(User).filter(User.email == email).first()
         if user is None:
             return error_response("User not found", status_code=404)
         return user
     except JWTError:
-        return error_response("Invalid username or password", status_code=401)
+        return error_response("Invalid credentials", status_code=401)
 
 @auth_router.post("/signup")
 def signup(request: SignupRequest, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == request.email).first()
-    
     if existing_user:
         if existing_user.email_verified:
             return error_response("Email already registered")
+        return error_response("User already registered but not verified. Please verify your email or request a new OTP.")
 
-        # Generate a new OTP and update expiry
-        otp = str(random.randint(100000, 999999))
-        existing_user.otp = otp
-        existing_user.otp_expiry = datetime.utcnow() + timedelta(minutes=1)
-        db.commit()
-
-        # Resend OTP email
-        send_otp_email(request.email, otp, request.full_name)
-        return success_response("User already registered but not verified. A new OTP has been sent to your email.")
-
-    # New user registration
     otp = str(random.randint(100000, 999999))
     hashed_password = hash_password(request.password)
     otp_expiry = datetime.utcnow() + timedelta(minutes=1)
@@ -100,7 +89,7 @@ def verify_otp(request: VerifyOtpRequest, db: Session = Depends(get_db)):
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
     if not user or not verify_password(request.password, user.hashed_password):
-        return error_response("Invalid username or password", status_code=401)
+        return error_response("Invalid credentials", status_code=401)
     if not user.email_verified:
         return error_response("Email not verified", status_code=403)
 
