@@ -33,18 +33,19 @@ def signup(request: SignupRequest, db: Session = Depends(get_db)):
     
     if existing_user:
         if existing_user.email_verified:
-            return error_response("Email already registered.")
-        
+            return error_response("Email already registered")
+
         # Generate a new OTP and update expiry
         otp = str(random.randint(100000, 999999))
         existing_user.otp = otp
         existing_user.otp_expiry = datetime.utcnow() + timedelta(minutes=1)
         db.commit()
 
-        send_otp_email(request.email, otp, existing_user.full_name)
-        return success_response("OTP resent. Please check your email.")
-    
-    # Register new user if not already registered
+        # Resend OTP email
+        send_otp_email(request.email, otp, request.full_name)
+        return success_response("User already registered but not verified. A new OTP has been sent to your email.")
+
+    # New user registration
     otp = str(random.randint(100000, 999999))
     hashed_password = hash_password(request.password)
     otp_expiry = datetime.utcnow() + timedelta(minutes=1)
