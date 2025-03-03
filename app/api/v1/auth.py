@@ -99,7 +99,7 @@ def verify_otp(request: VerifyOtpRequest, db: Session = Depends(get_db)):
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
     if not user or not verify_password(request.password, user.hashed_password):
-        return error_response("Invalid credentials", status_code=401)
+        return error_response("Invalid username or password", status_code=401)
     if not user.email_verified:
         return error_response("Email not verified", status_code=403)
 
