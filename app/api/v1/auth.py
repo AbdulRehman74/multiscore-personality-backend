@@ -30,26 +30,32 @@ def get_current_user(token: str = Depends(OAuth2PasswordBearer(tokenUrl="login")
 @auth_router.post("/signup")
 def signup(request: SignupRequest, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == request.email).first()
+    
+    otp = str(random.randint(100000, 999999))
+    otp_expiry = datetime.utcnow() + timedelta(minutes=1)
+    
     if existing_user:
         if existing_user.email_verified:
-            return error_response("Email already registered")
-        return error_response("User already registered but not verified. Please verify your email or request a new OTP.")
-
-    otp = str(random.randint(100000, 999999))
-    hashed_password = hash_password(request.password)
-    otp_expiry = datetime.utcnow() + timedelta(minutes=1)
-
-    new_user = User(
-        email=request.email,
-        hashed_password=hashed_password,
-        full_name=request.full_name,
-        otp=otp,
-        otp_expiry=otp_expiry,
-    )
-    db.add(new_user)
+            return error_response("Email already registered. Please log in or reset your password.")
+        
+        # Preserve the original name unless explicitly changed
+        if request.full_name and request.full_name != existing_user.full_name:
+            existing_user.full_name = request.full_name  
+        
+        existing_user.otp = otp
+        existing_user.otp_expiry = otp_expiry
+    else:
+        existing_user = User(
+            email=request.email,
+            hashed_password=hash_password(request.password),
+            full_name=request.full_name,
+            otp=otp,
+            otp_expiry=otp_expiry,
+        )
+        db.add(existing_user)
+    
     db.commit()
-
-    send_otp_email(request.email, otp, request.full_name)
+    send_otp_email(request.email, otp, existing_user.full_name)
     return success_response("User registered. Please verify your email.")
 
 @auth_router.post("/send-otp")
@@ -111,21 +117,31 @@ def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db
         return error_response("Email not registered", status_code=404)
 
     reset_token = create_access_token(data={"sub": user.email}, expires_delta=timedelta(minutes=15))
-    reset_link = f"{settings.FRONTEND_DOMAIN}/reset-password?token={reset_token}"
+    reset_link = f"https://multi-score-personality-714c2acb45ba.herokuapp.com/reset-password?token={reset_token}"
 
     send_reset_link_email(user.email, reset_link, user.full_name)
     return success_response("Password reset link sent to your email.")
 
 @auth_router.post("/reset-password")
 def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == request.email).first()
-    if not user:
-        return error_response("Email not registered", status_code=404)
+    try:
+        payload = jwt.decode(request.token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        email = payload.get("sub")
+        if not email:
+            return error_response("Invalid or expired token", status_code=401)
 
-    user.hashed_password = hash_password(request.new_password)
-    db.commit()
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            return error_response("User not found", status_code=404)
 
-    return success_response("Password reset successfully")
+        user.hashed_password = hash_password(request.new_password)
+        db.commit()
+
+        return success_response("Password reset successfully")
+    except JWTError:
+        return error_response("Invalid or expired token", status_code=401)
+
+
 
 @auth_router.get("/user-profile")
 def get_user_profile(current_user: User = Depends(get_current_user)):

@@ -56,3 +56,6 @@ Thumbs.db
 structure.txt
 .env
 test.db
+
+#pem key
+app/msp-key-pair

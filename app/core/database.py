@@ -5,7 +5,7 @@ import os
 
 POSTGRES_DATABASE_URL = os.getenv("POSTGRES_DATABASE_URL")
 
-engine = create_engine(POSTGRES_DATABASE_URL)
+engine = create_engine("postgresql://postgres:evaw0wyGlOYEtW6zmuhs@msp-prod-db.cg1kmk40idam.us-east-1.rds.amazonaws.com:5432/postgres")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
