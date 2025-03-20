@@ -2,7 +2,7 @@ import random
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.auth import hash_password, verify_password, create_access_token
-from app.core.email import send_otp_email, send_reset_link_email
+from app.core.email import send_otp_email, send_reset_link_email , send_result_email
 from app.core.database import get_db
 from app.models.user import User
 from app.core.config import settings
@@ -154,3 +154,17 @@ def get_user_profile(current_user: User = Depends(get_current_user)):
         "full_name": current_user.full_name,
         "email_verified": current_user.email_verified
     })
+
+@auth_router.post("/send-result")
+def send_result(request: dict, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == request.get("email")).first()
+    if not user:
+        return error_response("User not found", status_code=404)
+
+    html_template = request.get("html_template")
+    if not html_template:
+        return error_response("HTML template is required", status_code=400)
+
+    send_result_email(user.email, html_template, user.username)
+
+    return success_response("Result email sent successfully")

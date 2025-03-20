@@ -115,6 +115,30 @@ def send_otp_email(email: str, otp: str, username: str):
     response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()
 
+def send_result_email(email: str, html_template: str, username: str):
+    """Send result email using SendGrid."""
+    url = email_url
+    headers = {
+        "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    payload = {
+        "personalizations": [{
+            "to": [{"email": email}],
+            "subject": "Your Test Results - Gregor Jeffrey Cognitive Preference Indicator",
+        }],
+        "from": {"email": "warismstf@gmail.com", "name": "Gregor Jeffrey Support"},
+        "content": [{
+            "type": "text/html",
+            "value": html_template
+        }]
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()
+
+
 def send_reset_link_email(email: str, reset_link: str, username: str):
     """Send password reset email using SendGrid."""
     url = email_url
