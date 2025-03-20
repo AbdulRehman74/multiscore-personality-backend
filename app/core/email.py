@@ -115,47 +115,13 @@ def send_otp_email(email: str, otp: str, username: str):
     response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()
 
-import requests
-
-def send_result_email(email: str, username: str):
-    """Send result email using SendGrid with a dark theme (black background, white text)."""
+def send_result_email(email: str, html_template: str, username: str):
+    """Send result email using SendGrid."""
     url = email_url
     headers = {
         "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
         "Content-Type": "application/json",
     }
-
-    dark_theme_template = f"""
-    <html>
-        <head>
-            <style>
-                body {{
-                    background-color: #000;
-                    color: #fff;
-                    font-family: Arial, sans-serif;
-                    padding: 20px;
-                    text-align: center;
-                }}
-                .content {{
-                    max-width: 600px;
-                    margin: auto;
-                    background-color: #111;
-                    padding: 20px;
-                    border-radius: 8px;
-                }}
-                h1, p {{
-                    color: #fff;
-                }}
-            </style>
-        </head>
-        <body>
-            <div class="content">
-                <h1>Hello, {username}!</h1>
-                <p>Your test results are ready. Please check your dashboard for details.</p>
-            </div>
-        </body>
-    </html>
-    """
 
     payload = {
         "personalizations": [{
@@ -165,13 +131,12 @@ def send_result_email(email: str, username: str):
         "from": {"email": "warismstf@gmail.com", "name": "Gregor Jeffrey Support"},
         "content": [{
             "type": "text/html",
-            "value": dark_theme_template
+            "value": html_template
         }]
     }
 
     response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()
-
 
 
 def send_reset_link_email(email: str, reset_link: str, username: str):
