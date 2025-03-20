@@ -25,4 +25,3 @@ class SendOtpRequest(BaseModel):
 
 class SendResultRequest(BaseModel):
     email: str
-    html_template: str
