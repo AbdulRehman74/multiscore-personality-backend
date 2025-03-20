@@ -1,3 +1,5 @@
+import os
+import uvicorn
 from fastapi import FastAPI
 from sqladmin import Admin
 from sqlalchemy import select
@@ -5,7 +7,7 @@ from app.core.database import engine, SessionLocal
 from app.api.v1.auth import auth_router
 from app.api.v1 import questions, scoring, decision_tree, payment, stripe_webhook
 from app.core.config import configure_cors
-from app.core.database import Base, engine
+from app.core.database import Base
 from app.admin import create_admin
 
 # Create database tables
@@ -32,3 +34,7 @@ admin = create_admin(app)
 def startup():
     with SessionLocal() as session:
         session.execute(select(1))
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=port)
