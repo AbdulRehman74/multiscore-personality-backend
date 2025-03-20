@@ -120,7 +120,11 @@ def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db
     reset_link = f"https://develop.d21y2971m65dqh.amplifyapp.com/Create_Password?token={reset_token}"
 
     send_reset_link_email(user.email, reset_link, user.full_name)
-    return success_response("Password reset link sent to your email.")
+    
+    return success_response(
+        "Password reset link sent to your email.",
+        data={"reset_link": reset_link, "reset_token": reset_token}
+    )
 
 @auth_router.post("/reset-password")
 def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db)):
