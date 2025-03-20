@@ -117,7 +117,7 @@ def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db
         return error_response("Email not registered", status_code=404)
 
     reset_token = create_access_token(data={"sub": user.email}, expires_delta=timedelta(minutes=15))
-    reset_link = f"https://multi-score-personality-714c2acb45ba.herokuapp.com/reset-password?token={reset_token}"
+    reset_link = f"https://develop.d21y2971m65dqh.amplifyapp.com/Create_Password?token={reset_token}"
 
     send_reset_link_email(user.email, reset_link, user.full_name)
     return success_response("Password reset link sent to your email.")
