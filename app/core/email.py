@@ -117,7 +117,7 @@ def send_otp_email(email: str, otp: str, username: str):
 
 import requests
 
-def send_result_email(email: str, html_template: str, username: str):
+def send_result_email(email: str, username: str):
     """Send result email using SendGrid with a dark theme (black background, white text)."""
     url = email_url
     headers = {
@@ -151,7 +151,7 @@ def send_result_email(email: str, html_template: str, username: str):
         <body>
             <div class="content">
                 <h1>Hello, {username}!</h1>
-                <p>{html_template}</p>
+                <p>Your test results are ready. Please check your dashboard for details.</p>
             </div>
         </body>
     </html>

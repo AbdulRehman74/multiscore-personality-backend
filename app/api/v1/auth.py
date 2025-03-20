@@ -160,7 +160,6 @@ def send_result(request: SendResultRequest, db: Session = Depends(get_db)):
     if not user:
         return error_response("User not found", status_code=404)
 
-    dummy_html_template = "<h1>Test Email</h1><p>This is a test result email.</p>"
-    send_result_email(user.email, dummy_html_template, user.full_name)
+    send_result_email(user.email, user.full_name)
 
     return success_response("Result email sent successfully.", status_code=200)
