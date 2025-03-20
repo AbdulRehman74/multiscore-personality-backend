@@ -8,7 +8,7 @@ from app.models.user import User
 from app.core.config import settings
 from app.core.response import success_response, error_response
 from datetime import datetime, timedelta
-from app.models.basemodels import SignupRequest, VerifyOtpRequest, LoginRequest, ForgotPasswordRequest, ResetPasswordRequest, SendOtpRequest
+from app.models.basemodels import SignupRequest, VerifyOtpRequest, LoginRequest, ForgotPasswordRequest, ResetPasswordRequest, SendOtpRequest, SendResultRequest
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
@@ -155,16 +155,15 @@ def get_user_profile(current_user: User = Depends(get_current_user)):
         "email_verified": current_user.email_verified
     })
 
-@auth_router.post("/send-result")
-def send_result(request: dict, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == request.get("email")).first()
+@auth_router.post("/send-result", status_code=200)
+def send_result(request: SendResultRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == request.email).first()
     if not user:
         return error_response("User not found", status_code=404)
 
-    html_template = request.get("html_template")
-    if not html_template:
+    if not request.html_template.strip():
         return error_response("HTML template is required", status_code=400)
 
-    send_result_email(user.email, html_template, user.username)
+    send_result_email(user.email, request.html_template, user.full_name)
+    return success_response("Result email sent successfully.", status_code=200)
 
-    return success_response("Result email sent successfully")

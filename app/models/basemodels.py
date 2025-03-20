@@ -22,3 +22,7 @@ class ResetPasswordRequest(BaseModel):
 
 class SendOtpRequest(BaseModel):
     email: str
+
+class SendResultRequest(BaseModel):
+    email: str
+    html_template: str
