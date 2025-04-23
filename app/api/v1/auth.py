@@ -156,14 +156,14 @@ def get_user_profile(current_user: User = Depends(get_current_user)):
     })
 
 @auth_router.post("/send-result", status_code=200)
-def send_result(request: SendResultRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == request.email).first()
-    if not user:
-        return error_response("User not found", status_code=404)
-
+def send_result(
+    request: SendResultRequest, 
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_user)  
+):
     if not request.html_template.strip():
         return error_response("HTML template is required", status_code=400)
 
-    send_result_email(user.email, request.html_template, user.full_name)
+    send_result_email(current_user.email, request.html_template, current_user.full_name)
     return success_response("Result email sent successfully.", status_code=200)
 
