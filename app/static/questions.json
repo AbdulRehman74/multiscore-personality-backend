@@ -1,62 +1,102 @@
 [
   {
     "id": 0,
-    "text": "I like to make decisions based on data rather than intuition.",
+    "text": "I prefer to make decisions after I’ve checked the facts.",
     "category": "Analytical"
   },
   {
     "id": 1,
-    "text": "I enjoy exploring different perspectives and considering alternative viewpoints.",
-    "category": "Conceptual"
+    "text": "I value solutions that are backed up by clear logic.",
+    "category": "Analytical"
   },
   {
     "id": 2,
-    "text": "I find satisfaction in identifying patterns and trends in information.",
-    "category": "Structural"
+    "text": "I like to understand things by examining the details.",
+    "category": "Analytical"
   },
   {
     "id": 3,
-    "text": "I believe that practical applications are more important than theoretical ideas.",
+    "text": "I frequently look for data to confirm if something is true.",
     "category": "Analytical"
   },
   {
     "id": 4,
-    "text": "I like to hear other people’s perspectives when I’m solving a problem.",
-    "category": "Social"
+    "text": "I often look for inconsistencies in how something is explained.",
+    "category": "Analytical"
   },
   {
     "id": 5,
-    "text": "I enjoy coming up with ideas that others haven’t thought of.",
-    "category": "Conceptual"
+    "text": "I prefer information that’s explained step by step.",
+    "category": "Structural"
   },
   {
     "id": 6,
-    "text": "I believe that a step-by-step approach is essential for solving most problems.",
+    "text": "I value having clear procedures in my work.",
     "category": "Structural"
   },
   {
     "id": 7,
-    "text": "I think a lot about how my decisions could affect the people around me.",
-    "category": "Social"
+    "text": "I like to have a plan before I take action.",
+    "category": "Structural"
   },
   {
     "id": 8,
-    "text": "I find it exciting to tackle problems that don't have straightforward answers.",
-    "category": "Conceptual"
+    "text": "I frequently bring order to unclear information.",
+    "category": "Structural"
   },
   {
     "id": 9,
-    "text": "I enjoy distilling complex information to understand it better.",
-    "category": "Analytical"
+    "text": "I often feel best when I know what’s happening next.",
+    "category": "Structural"
   },
   {
     "id": 10,
-    "text": "I like working in groups better when people share a common vision.",
-    "category": "Social"
+    "text": "I prefer exploring new perspectives rather than familiar ones.",
+    "category": "Conceptual"
   },
   {
     "id": 11,
-    "text": "I tend to prioritize tasks based on their immediate relevance and impact.",
-    "category": "Structural"
+    "text": "I value ideas that question predictable ways of thinking.",
+    "category": "Conceptual"
+  },
+  {
+    "id": 12,
+    "text": "I like conversations that imagine new possibilities.",
+    "category": "Conceptual"
+  },
+  {
+    "id": 13,
+    "text": "I frequently connect ideas to come up with something new.",
+    "category": "Conceptual"
+  },
+  {
+    "id": 14,
+    "text": "I often imagine future possibilities even if they aren’t practical.",
+    "category": "Conceptual"
+  },
+  {
+    "id": 15,
+    "text": "I prefer conversations that create real connection with others.",
+    "category": "Social"
+  },
+  {
+    "id": 16,
+    "text": "I value ideas that help people understand each other.",
+    "category": "Social"
+  },
+  {
+    "id": 17,
+    "text": "I like to think through ideas with people I trust.",
+    "category": "Social"
+  },
+  {
+    "id": 18,
+    "text": "I frequently consider other people’s views before I share my own.",
+    "category": "Social"
+  },
+  {
+    "id": 19,
+    "text": "I often pick up on subtle cues in group settings.",
+    "category": "Social"
   }
 ]
