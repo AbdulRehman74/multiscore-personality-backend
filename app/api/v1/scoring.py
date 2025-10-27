@@ -29,9 +29,9 @@ async def score_responses(request: ScoringRequest):
                 status_code=400,
                 detail=build_response(
                     success=False,
-                    message="Invalid response pattern detected.",
+                    message="All your answers were the same.",
                     case="Uniform",
-                    details="All answers were identical. Please retake the test with varied responses."
+                    details="It seems you selected the same option for every question. Please try again and choose answers that best reflect your real thoughts and preferences."
                 )
             )
 
@@ -40,9 +40,9 @@ async def score_responses(request: ScoringRequest):
                 status_code=400,
                 detail=build_response(
                     success=False,
-                    message="Invalid response pattern detected.",
+                    message="Your answers were too similar.",
                     case="Low Variability",
-                    details="Too many answers were the same (≥18 identical). Please provide more varied responses."
+                    details="Many of your answers were nearly identical. Please retake the quiz and give each question some thought to show your true preferences."
                 )
             )
 
@@ -51,11 +51,12 @@ async def score_responses(request: ScoringRequest):
                 status_code=400,
                 detail=build_response(
                     success=False,
-                    message="Invalid response pattern detected.",
+                    message="We couldn’t find a clear result.",
                     case="No Preference",
-                    details="No clear preference was found. All category scores were below the threshold of 18."
+                    details="Your answers didn’t show a clear pattern of preferences. Please try again and respond more confidently to each question."
                 )
             )
+
 
         # ---- Normal scoring ----
         dominant_preferences = determine_dominant_preferences(scores)
