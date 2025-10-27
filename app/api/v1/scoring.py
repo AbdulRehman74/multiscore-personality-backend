@@ -23,7 +23,7 @@ async def score_responses(request: ScoringRequest):
         scores = calculate_scores(request.responses, request.seed)
         flag = determine_flag(scores, request.responses)
 
-        # ---- Handle all invalid test patterns as errors ----
+        
         if flag == "Uniform":
             raise HTTPException(
                 status_code=400,
@@ -31,7 +31,7 @@ async def score_responses(request: ScoringRequest):
                     success=False,
                     message="All your answers were the same.",
                     case="Uniform",
-                    details="It seems you selected the same option for every question. Please try again and choose answers that best reflect your real thoughts and preferences."
+                    details="Your answers were all the same. To generate an accurate result, try responding more reflectively."
                 )
             )
 
@@ -42,7 +42,7 @@ async def score_responses(request: ScoringRequest):
                     success=False,
                     message="Your answers were too similar.",
                     case="Low Variability",
-                    details="Many of your answers were nearly identical. Please retake the quiz and give each question some thought to show your true preferences."
+                    details="Your answers were almost all the same. To generate an accurate result, try responding more reflectively."
                 )
             )
 
@@ -53,7 +53,7 @@ async def score_responses(request: ScoringRequest):
                     success=False,
                     message="We couldn’t find a clear result.",
                     case="No Preference",
-                    details="Your answers didn’t show a clear pattern of preferences. Please try again and respond more confidently to each question."
+                    details="YYou didn’t show a preference for a specific cognitive modality. To generate an accurate result, try responding more reflectively."
                 )
             )
 
