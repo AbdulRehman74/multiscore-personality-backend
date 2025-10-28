@@ -53,7 +53,7 @@ async def score_responses(request: ScoringRequest):
                     success=False,
                     message="We couldn’t find a clear result.",
                     case="No Preference",
-                    details="YYou didn’t show a preference for a specific cognitive modality. To generate an accurate result, try responding more reflectively."
+                    details="You didn’t show a preference for a specific cognitive modality. To generate an accurate result, try responding more reflectively."
                 )
             )
 
