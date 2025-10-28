@@ -27,27 +27,27 @@
   {
     "id": 5,
     "text": "I prefer information that’s explained step by step.",
-    "category": "Structural"
+    "category": "Logistical"
   },
   {
     "id": 6,
     "text": "I value having clear procedures in my work.",
-    "category": "Structural"
+    "category": "Logistical"
   },
   {
     "id": 7,
     "text": "I like to have a plan before I take action.",
-    "category": "Structural"
+    "category": "Logistical"
   },
   {
     "id": 8,
     "text": "I frequently bring order to unclear information.",
-    "category": "Structural"
+    "category": "Logistical"
   },
   {
     "id": 9,
     "text": "I often feel best when I know what’s happening next.",
-    "category": "Structural"
+    "category": "Logistical"
   },
   {
     "id": 10,
@@ -77,26 +77,26 @@
   {
     "id": 15,
     "text": "I prefer conversations that create real connection with others.",
-    "category": "Social"
+    "category": "Relational"
   },
   {
     "id": 16,
     "text": "I value ideas that help people understand each other.",
-    "category": "Social"
+    "category": "Relational"
   },
   {
     "id": 17,
     "text": "I like to think through ideas with people I trust.",
-    "category": "Social"
+    "category": "Relational"
   },
   {
     "id": 18,
     "text": "I frequently consider other people’s views before I share my own.",
-    "category": "Social"
+    "category": "Relational"
   },
   {
     "id": 19,
     "text": "I often pick up on subtle cues in group settings.",
-    "category": "Social"
+    "category": "Relational"
   }
 ]

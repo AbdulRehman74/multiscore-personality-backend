@@ -13,16 +13,7 @@ ANSWER_SCORES = {
     "Strongly agree": 5
 }
 
-CATEGORIES = ["Analytical", "Structural", "Conceptual", "Social"]
-
-
-import random
-from typing import List, Dict
-from collections import Counter
-from app.models.scoring import Response
-from app.core.utils import load_questions
-
-CATEGORIES = ["Analytical", "Structural", "Conceptual", "Social"]
+CATEGORIES = ["Analytical", "Logistical", "Conceptual", "Relational"]
 
 def calculate_scores(responses: List["Response"], seed: int = None) -> Dict[str, int]:
     questions = load_questions()
