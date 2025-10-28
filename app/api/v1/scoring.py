@@ -2,7 +2,7 @@ import json
 import os
 import logging
 from fastapi import APIRouter, HTTPException
-from app.models.scoring import ScoringRequest, ScoringResponse
+from app.models.scoring import ScoringRequest
 from app.core.scoring import calculate_scores, determine_dominant_preferences, determine_flag
 
 router = APIRouter()
@@ -28,38 +28,36 @@ async def score_responses(request: ScoringRequest):
         scores = calculate_scores(request.responses, request.seed)
         flag = determine_flag(scores, request.responses)
 
+        # ---- Handle Error Flags ----
         if flag == "Uniform":
-            raise HTTPException(
-                status_code=400,
-                detail=build_response(
-                    success=False,
-                    message="All your answers were the same.",
-                    case="Uniform",
-                    details="Your answers were all the same. To generate an accurate result, try responding more reflectively."
-                )
+            err_payload = build_response(
+                success=False,
+                message="All your answers were the same.",
+                case="Uniform",
+                details="Your answers were all the same. To generate an accurate result, try responding more reflectively."
             )
+            logger.error("Error Response (Uniform): %s", json.dumps(err_payload, indent=2))
+            raise HTTPException(status_code=400, detail=err_payload)
 
         if flag == "Low Variability":
-            raise HTTPException(
-                status_code=400,
-                detail=build_response(
-                    success=False,
-                    message="Your answers were too similar.",
-                    case="Low Variability",
-                    details="Your answers were almost all the same. To generate an accurate result, try responding more reflectively."
-                )
+            err_payload = build_response(
+                success=False,
+                message="Your answers were too similar.",
+                case="Low Variability",
+                details="Your answers were almost all the same. To generate an accurate result, try responding more reflectively."
             )
+            logger.error("Error Response (Low Variability): %s", json.dumps(err_payload, indent=2))
+            raise HTTPException(status_code=400, detail=err_payload)
 
         if flag == "No Preference":
-            raise HTTPException(
-                status_code=400,
-                detail=build_response(
-                    success=False,
-                    message="We couldn’t find a clear result.",
-                    case="No Preference",
-                    details="You didn’t show a preference for a specific cognitive modality. To generate an accurate result, try responding more reflectively."
-                )
+            err_payload = build_response(
+                success=False,
+                message="We couldn’t find a clear result.",
+                case="No Preference",
+                details="You didn’t show a preference for a specific cognitive modality. To generate an accurate result, try responding more reflectively."
             )
+            logger.error("Error Response (No Preference): %s", json.dumps(err_payload, indent=2))
+            raise HTTPException(status_code=400, detail=err_payload)
 
         # ---- Normal scoring ----
         dominant_preferences = determine_dominant_preferences(scores)
@@ -104,12 +102,11 @@ async def score_responses(request: ScoringRequest):
             }
         )
 
-        # Log the final response
+        # Log final successful response
         logger.info("Final Scoring Response: %s", json.dumps(final_response, indent=2))
-
         return final_response
 
     except ValueError as e:
         error_response = build_response(success=False, message=str(e))
-        logger.error("Error Response: %s", json.dumps(error_response, indent=2))
+        logger.error("Error Response (ValueError): %s", json.dumps(error_response, indent=2))
         raise HTTPException(status_code=400, detail=error_response)
