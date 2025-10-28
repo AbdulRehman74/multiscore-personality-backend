@@ -1,11 +1,16 @@
+import json
+import os
+import logging
 from fastapi import APIRouter, HTTPException
 from app.models.scoring import ScoringRequest, ScoringResponse
 from app.core.scoring import calculate_scores, determine_dominant_preferences, determine_flag
-import json
-import os
 
 router = APIRouter()
 RESULTS_PATH = os.path.join("app", "static", "results.json")
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 def build_response(success: bool, message: str, data: dict = None, case: str = None, details: str = None):
     body = {"success": success, "message": message}
@@ -23,7 +28,6 @@ async def score_responses(request: ScoringRequest):
         scores = calculate_scores(request.responses, request.seed)
         flag = determine_flag(scores, request.responses)
 
-        
         if flag == "Uniform":
             raise HTTPException(
                 status_code=400,
@@ -57,7 +61,6 @@ async def score_responses(request: ScoringRequest):
                 )
             )
 
-
         # ---- Normal scoring ----
         dominant_preferences = determine_dominant_preferences(scores)
         if len(dominant_preferences) == 1:
@@ -90,7 +93,7 @@ async def score_responses(request: ScoringRequest):
 
             description = result_data.get(result_key, "") if result_key else ""
 
-        return build_response(
+        final_response = build_response(
             success=True,
             message="Score calculated successfully.",
             data={
@@ -101,8 +104,12 @@ async def score_responses(request: ScoringRequest):
             }
         )
 
+        # Log the final response
+        logger.info("Final Scoring Response: %s", json.dumps(final_response, indent=2))
+
+        return final_response
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=400,
-            detail=build_response(success=False, message=str(e))
-        )
+        error_response = build_response(success=False, message=str(e))
+        logger.error("Error Response: %s", json.dumps(error_response, indent=2))
+        raise HTTPException(status_code=400, detail=error_response)
