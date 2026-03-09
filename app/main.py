@@ -8,10 +8,13 @@ from app.api.v1.auth import auth_router
 from app.api.v1 import questions, scoring, decision_tree, payment, stripe_webhook
 from app.core.config import configure_cors
 from app.admin import create_admin
+from starlette.middleware.sessions import SessionMiddleware
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+app.add_middleware(SessionMiddleware, secret_key="super-shdsfmcsdvjvcs3secret-admin-key")
 
 configure_cors(app)
 
