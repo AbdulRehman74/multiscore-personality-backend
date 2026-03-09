@@ -17,7 +17,7 @@ RUN pip install "poetry==$POETRY_VERSION"
 COPY pyproject.toml /app/
 
 # Install project dependencies using Poetry
-RUN poetry install --no-interaction --no-ansi
+RUN poetry install --no-interaction --no-ansi --no-root
 
 # Now copy the rest of the project files into the container
 COPY . /app
