@@ -112,8 +112,11 @@ def send_otp_email(email: str, otp: str, username: str):
         }]
     }
 
-    response = requests.post(url, json=payload, headers=headers)
-    response.raise_for_status()
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Email service failure: {e}")
 
 def send_result_email(email: str, html_template: str, username: str):
     """Send result email using SendGrid."""
@@ -135,8 +138,11 @@ def send_result_email(email: str, html_template: str, username: str):
         }]
     }
 
-    response = requests.post(url, json=payload, headers=headers)
-    response.raise_for_status()
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Email service failure: {e}")
 
 
 def send_reset_link_email(email: str, reset_link: str, username: str):
@@ -244,5 +250,9 @@ def send_reset_link_email(email: str, reset_link: str, username: str):
             """
         }]
     }
-    response = requests.post(url, json=payload, headers=headers)
-    response.raise_for_status()
+    
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Email service failure: {e}")
