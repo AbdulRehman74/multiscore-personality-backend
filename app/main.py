@@ -6,10 +6,13 @@ from fastapi import FastAPI
 from sqlalchemy import select
 from starlette.middleware.sessions import SessionMiddleware
 
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
+
 from app.core.database import engine, SessionLocal, Base
 from app.api.v1.auth import auth_router
 from app.api.v1 import questions, scoring, decision_tree, payment, stripe_webhook
-from app.core.config import configure_cors
+from app.core.config import configure_cors, settings
 from app.admin import create_admin
 
 
@@ -17,8 +20,14 @@ from app.admin import create_admin
 # SENTRY INITIALIZATION
 # ----------------------------
 sentry_sdk.init(
-    dsn="https://1ebed5f33ed4f57eb1652c2c9f3d33ba@o4511018964090880.ingest.us.sentry.io/4511018978246656",
-    traces_sample_rate=0.2,  # reduce performance data
+    dsn=settings.SENTRY_DSN,
+    integrations=[
+        FastApiIntegration(),
+        SqlalchemyIntegration(),
+    ],
+    environment=settings.SENTRY_ENVIRONMENT,
+    traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
+    release=settings.SENTRY_RELEASE,
     send_default_pii=True,
 )
 
@@ -58,9 +67,7 @@ def startup():
         session.execute(select(1))
 
 
-# ----------------------------
-# TEST ROUTE FOR SENTRY
-# ----------------------------
+# Debug route for testing Sentry
 @app.get("/sentry-debug")
 async def trigger_error():
     division_by_zero = 1 / 0
