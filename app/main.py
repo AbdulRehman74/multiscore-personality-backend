@@ -1,20 +1,39 @@
 import os
 import uvicorn
+import sentry_sdk
+
 from fastapi import FastAPI
 from sqlalchemy import select
+from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.database import engine, SessionLocal, Base
 from app.api.v1.auth import auth_router
 from app.api.v1 import questions, scoring, decision_tree, payment, stripe_webhook
 from app.core.config import configure_cors
 from app.admin import create_admin
-from starlette.middleware.sessions import SessionMiddleware
 
+
+# ----------------------------
+# SENTRY INITIALIZATION
+# ----------------------------
+sentry_sdk.init(
+    dsn="https://1ebed5f33ed4f57eb1652c2c9f3d33ba@o4511018964090880.ingest.us.sentry.io/4511018978246656",
+    traces_sample_rate=0.2,  # reduce performance data
+    send_default_pii=True,
+)
+
+
+# Create database tables
 Base.metadata.create_all(bind=engine)
 
+
+# FastAPI app
 app = FastAPI()
 
-app.add_middleware(SessionMiddleware, secret_key="super-shdsfmcsdvjvcs3secret-admin-key")
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="super-shdsfmcsdvjvcs3secret-admin-key"
+)
 
 configure_cors(app)
 
@@ -37,6 +56,14 @@ def root():
 def startup():
     with SessionLocal() as session:
         session.execute(select(1))
+
+
+# ----------------------------
+# TEST ROUTE FOR SENTRY
+# ----------------------------
+@app.get("/sentry-debug")
+async def trigger_error():
+    division_by_zero = 1 / 0
 
 
 if __name__ == "__main__":
