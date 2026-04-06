@@ -26,7 +26,7 @@ A FastAPI-based backend service for a comprehensive personality assessment appli
 - **Email**: SendGrid
 - **Monitoring**: Sentry
 - **Admin Panel**: SQLAdmin
-- **Deployment**: Docker 
+- **Deployment**: Docker, AWS 
 
 ## Prerequisites
 
@@ -199,9 +199,12 @@ multiscore-personality-backend/
 
 ## Deployment
 
-The application supports multiple deployment options:
+The application supports Docker-based deployment. The backend is currently deployed on AWS.
 
-### Docker Deployment
+### Production Domain
+- **API Base URL**: https://api.modes.cognitivedynamics.com/
+
+### Docker Deployment (Local Development)
 ```bash
 # Build the image
 docker build -t multiscore-personality-backend .
@@ -209,6 +212,53 @@ docker build -t multiscore-personality-backend .
 # Run the container
 docker run -p 8000:8000 --env-file .env multiscore-personality-backend
 ```
+
+### AWS Deployment
+The application is deployed on AWS using Docker containers. The deployment process involves:
+
+1. **Build the Docker image:**
+   ```bash
+   docker build -t multiscore-personality-backend .
+   ```
+
+2. **Tag the image for your registry:**
+   ```bash
+   docker tag multiscore-personality-backend your-registry/multiscore-personality-backend:latest
+   ```
+
+3. **Push to container registry:**
+   ```bash
+   docker push your-registry/multiscore-personality-backend:latest
+   ```
+
+4. **Deploy to AWS (ECS/Fargate or EC2):**
+   - Use AWS ECS with Fargate for serverless container deployment
+   - Or deploy to EC2 instances with Docker
+   - Configure environment variables in AWS Systems Manager Parameter Store or Secrets Manager
+   - Set up load balancer and domain configuration
+
+## Monitoring and Error Tracking
+
+### Sentry Configuration
+The application uses Sentry for error monitoring and performance tracking.
+
+1. **Create a Sentry project:**
+   - Go to [sentry.io](https://sentry.io) and create a new project
+   - Choose "Python" as the platform
+
+2. **Configure environment variables:**
+   ```env
+   SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
+   SENTRY_ENVIRONMENT=production
+   SENTRY_TRACES_SAMPLE_RATE=0.1
+   SENTRY_RELEASE=1.0.0
+   ```
+
+3. **Sentry will automatically:**
+   - Capture unhandled exceptions
+   - Track performance metrics
+   - Monitor API response times
+   - Log application errors with context
 
 ## Current Deployment Status
 
