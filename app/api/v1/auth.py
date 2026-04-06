@@ -2,13 +2,13 @@ import random
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.auth import hash_password, verify_password, create_access_token
-from app.core.email import send_otp_email, send_reset_link_email
+from app.core.email import send_otp_email, send_reset_link_email , send_result_email
 from app.core.database import get_db
 from app.models.user import User
 from app.core.config import settings
 from app.core.response import success_response, error_response
 from datetime import datetime, timedelta
-from app.models.basemodels import SignupRequest, VerifyOtpRequest, LoginRequest, ForgotPasswordRequest, ResetPasswordRequest, SendOtpRequest
+from app.models.basemodels import SignupRequest, VerifyOtpRequest, LoginRequest, ForgotPasswordRequest, ResetPasswordRequest, SendOtpRequest, SendResultRequest
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
@@ -120,7 +120,11 @@ def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db
     reset_link = f"https://develop.d21y2971m65dqh.amplifyapp.com/Create_Password?token={reset_token}"
 
     send_reset_link_email(user.email, reset_link, user.full_name)
-    return success_response("Password reset link sent to your email.")
+    
+    return success_response(
+        "Password reset link sent to your email.",
+        data={"reset_link": reset_link, "reset_token": reset_token}
+    )
 
 @auth_router.post("/reset-password")
 def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db)):
@@ -150,3 +154,16 @@ def get_user_profile(current_user: User = Depends(get_current_user)):
         "full_name": current_user.full_name,
         "email_verified": current_user.email_verified
     })
+
+@auth_router.post("/send-result", status_code=200)
+def send_result(
+    request: SendResultRequest, 
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_user)  
+):
+    if not request.html_template.strip():
+        return error_response("HTML template is required", status_code=400)
+
+    send_result_email(current_user.email, request.html_template, current_user.full_name)
+    return success_response("Result email sent successfully.", status_code=200)
+
